@@ -10,7 +10,7 @@
   display: none;
 }
 
-a{
+a {
   text-decoration: none;
 }
 
@@ -24,6 +24,7 @@ a{
   background: rgb(163, 163, 163);
 }
 
+
 @media screen and (max-width: 768px) {
   .gridSystem {
     grid-template-columns: 270px 1fr !important;
@@ -36,10 +37,10 @@ a{
   .gridnav {
     display: none;
   }
-  .bannerBox{
+  .bannerBox {
     display: none !important;
   }
-  .bannerchat{
+  .bannerchat {
     display: block !important;
   }
 }

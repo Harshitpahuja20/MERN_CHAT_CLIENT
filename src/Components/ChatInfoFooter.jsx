@@ -4,7 +4,7 @@ import { useState } from "react";
 import {BiSolidSend} from "react-icons/bi"
 import { useParams } from "react-router-dom";
 
-const ChatInfoFooter = () => {
+const ChatInfoFooter = ({setmsg , msgs}) => {
   const toast = useToast()
   function Toast(title , status){
     return toast({
@@ -21,6 +21,7 @@ const ChatInfoFooter = () => {
 
   const sendmessage = async(e) => {
     if(e.key === "Enter" && newMessage){
+      setNewMessage("")
       await axios({
         method : "POST",
         url : `${process.env.REACT_APP_SERVER_URL}/sendmessage`,
@@ -33,7 +34,8 @@ const ChatInfoFooter = () => {
           message : newMessage
         }
      }).then((res)=>{
-      console.log(res)
+       setmsg([...msgs , res.data.Data])
+       console.log(msgs)
      }).catch((err)=>{
       Toast(err?.message)
       console.log("err in login" + err?.message)
@@ -58,7 +60,7 @@ const ChatInfoFooter = () => {
     >
       <Flex w="90%" boxShadow="1px 1px 4px 2px #0000005e" mx="auto" align="center" borderRadius={8}>
         <FormControl onKeyDown={sendmessage}>
-        <Input focusBorderColor="transparent" border="none" style={{caretColor : "white"}} color="white" onChange={typingmessage}/>
+        <Input focusBorderColor="transparent" value={newMessage} border="none" style={{caretColor : "white"}} color="white" onChange={typingmessage}/>
         </FormControl>
         <Button bg="transparent" colorScheme="transparent" p={0}><BiSolidSend color="white"/></Button>
       </Flex>
