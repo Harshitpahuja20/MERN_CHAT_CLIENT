@@ -4,7 +4,7 @@ import { useState } from "react";
 import {BiSolidSend} from "react-icons/bi"
 import { useParams } from "react-router-dom";
 
-const ChatInfoFooter = ({setmsg , msgs}) => {
+const ChatInfoFooter = ({setmsg , msgs , socket}) => {
   const toast = useToast()
   function Toast(title , status){
     return toast({
@@ -34,6 +34,7 @@ const ChatInfoFooter = ({setmsg , msgs}) => {
           message : newMessage
         }
      }).then((res)=>{
+      socket.emit("new message" , res.data.Data)
        setmsg([...msgs , res.data.Data])
        console.log(msgs)
      }).catch((err)=>{

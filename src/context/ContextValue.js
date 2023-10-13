@@ -8,6 +8,7 @@ const ContextValue = ({ children }) => {
   let token;
   const [userData, setUserData] = useState({});
   const [totalChats, setTotalChats] = useState([]);
+  const [selectedChat , setSelectedChat] = useState({})
   const toast = useToast();
   function Toast(title , status){
     return toast({
@@ -31,6 +32,7 @@ const ContextValue = ({ children }) => {
   
         if (isTokenExpired) {
           localStorage.removeItem('chat-token');
+         window.location.replace("/")
         }
       } catch (error) {
         console.error('Error decoding token:', error);
@@ -73,7 +75,7 @@ const ContextValue = ({ children }) => {
   },[token])
 
   return (
-    <MyContext.Provider value={{ userData , isUrl , logout , totalChats , getbasicdata }}>
+    <MyContext.Provider value={{ userData , isUrl , logout , totalChats , getbasicdata , selectedChat , setSelectedChat }}>
       {children}
     </MyContext.Provider>
   );

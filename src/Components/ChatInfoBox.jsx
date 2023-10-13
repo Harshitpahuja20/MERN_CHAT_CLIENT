@@ -7,12 +7,16 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ScrollableFeed from "react-scrollable-feed";
 import { MyContext } from "../context/ContextProvider";
+import {io} from "socket.io-client"
+
+const ENDPOINT = "http://localhost:9999"
+var socket , selectedchatcompare
 
 const ChatInfoBox = () => {
   const chatContainerRef = useRef(null);
   const token = localStorage.getItem("chat-token");
-  const { userData } = useContext(MyContext);
-  console.log(token);
+  const { userData , selectedChat , setSelectedChat} = useContext(MyContext);
+  const [isSocketConnected, setisSocketConnected] = useState(false)
   const toast = useToast();
   function Toast(title, status) {
     return toast({
@@ -27,6 +31,7 @@ const ChatInfoBox = () => {
   const { userid, user2id } = useParams();
 
   const fetchmessages = async (chatID, user2ID) => {
+    setMessages([])
     await axios({
       method: "POST",
       url: `${process.env.REACT_APP_SERVER_URL}/findchat/${chatID}/${user2ID}`,
@@ -36,8 +41,10 @@ const ChatInfoBox = () => {
       },
     })
       .then((res) => {
-        console.log(res?.data?.Data);
+        if(Object.keys(selectedChat).length === 0)(setSelectedChat(res?.data?.Data?.reciever))
+        console.log(res?.data?.Data?.reciever)
         setMessages(res?.data?.Data?.chat);
+        socket.emit("join chat" , userid)
       })
       .catch((err) => {
         Toast("Failed to fetch messages");
@@ -45,8 +52,30 @@ const ChatInfoBox = () => {
       });
   };
 
+  useEffect(()=>{
+    console.log("s" + JSON.stringify(selectedChat))
+    socket = io(ENDPOINT);
+    socket.emit("setup" , userData)
+    socket.on("connection" , ()=>{
+      setisSocketConnected(true)
+    })
+  },[])
+
+  useEffect(() => {
+    socket.on("message received" , (newmessagereceived)=>{
+    //   if(!selectedchatcompare || selectedchatcompare !== newmessagereceived.chat._id){
+    //     //
+    //   }{
+    //     console.log(newmessagereceived)
+        setMessages([...messages , newmessagereceived])
+    //   }
+    })
+  })
+  
+
   useEffect(() => {
     fetchmessages(userid, user2id);
+    selectedchatcompare = userid
   }, [user2id, userid]);
 
   useEffect(() => {
@@ -57,7 +86,7 @@ const ChatInfoBox = () => {
 
   return (
     <Box maxW="100%">
-      <ChatInfoNavbar />
+      <ChatInfoNavbar selectedChat={selectedChat}/>
       <Flex
         color="white"
         pt="70px"
@@ -83,7 +112,7 @@ const ChatInfoBox = () => {
             );
           })}
       </Flex>
-      <ChatInfoFooter setmsg={setMessages} msgs={messages} />
+      <ChatInfoFooter setmsg={setMessages} msgs={messages} socket={socket}/>
     </Box>
   );
 };
