@@ -4,6 +4,7 @@ import PageNotFound from "../Pages/Error";
 import LoginPage from "../Pages/LoginPage";
 import HomePage from "../Pages/HomePage";
 import ChatInfoBox from "../Components/ChatInfoBox"
+import VideoCall from "../Components/VideoCall";
 let router;
 
 let authRoutes = [
@@ -22,6 +23,10 @@ let authRoutes = [
       {
         path: "/user/:userid/:user2id",
         element: <ChatInfoBox />,
+      },
+      {
+        path: "/user",
+        element: <VideoCall />,
       },
     ],
   },

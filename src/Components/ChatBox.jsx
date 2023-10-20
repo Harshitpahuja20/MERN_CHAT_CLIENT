@@ -32,7 +32,6 @@ const ChatBox = ({ data, bg }) => {
           maxW="50px"
           h="50px"
           borderRadius="100%"
-          overflow="hidden"
           ml="1rem"
         >
           <Img
@@ -48,6 +47,7 @@ const ChatBox = ({ data, bg }) => {
             w="100%"
             h="100%"
             objectFit="cover"
+            borderRadius={"25px"}
           />
         </Box>
         <Flex

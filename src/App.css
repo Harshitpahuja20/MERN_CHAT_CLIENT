@@ -28,12 +28,22 @@ a {
 @media screen and (max-width: 768px) {
   .gridSystem {
     grid-template-columns: 270px 1fr !important;
+    grid-template-areas: "main main" !important;
+  }
+  .gridnav {
+    display: none;
+  }
+  .bannerBox {
+    display: none !important;
+  }
+  .bannerchat {
+    display: block !important;
   }
 }
 @media screen and (max-width: 576px) {
-  .gridSystem {
-    grid-template-areas: "main main" !important;
-  }
+  /* .gridSystem {
+    
+  } */
   .gridnav {
     display: none;
   }

@@ -1,22 +1,26 @@
-import { Box, Flex, useToast } from "@chakra-ui/react";
+import { Box, Flex, Spinner, useToast } from "@chakra-ui/react";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import ChatInfoNavbar from "./ChatInfoNavbar";
 import ChatInfoFooter from "./ChatInfoFooter";
 import MessageBox from "./MessageBox";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import ScrollableFeed from "react-scrollable-feed";
 import { MyContext } from "../context/ContextProvider";
-import {io} from "socket.io-client"
+import { io } from "socket.io-client";
+import common_socket from "../socket/Socket"
 
-const ENDPOINT = "http://localhost:9999"
-var socket , selectedchatcompare
+const ENDPOINT = "http://localhost:9999";
+var selectedchatcompare;
 
 const ChatInfoBox = () => {
   const chatContainerRef = useRef(null);
   const token = localStorage.getItem("chat-token");
-  const { userData , selectedChat , setSelectedChat} = useContext(MyContext);
-  const [isSocketConnected, setisSocketConnected] = useState(false)
+  const { userData, selectedChat, setSelectedChat } = useContext(MyContext);
+  const [isSocketConnected, setisSocketConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, SetIsTyping] = useState(false);
+  const [typinguser, setTypingUser] = useState("");
   const toast = useToast();
   function Toast(title, status) {
     return toast({
@@ -31,7 +35,8 @@ const ChatInfoBox = () => {
   const { userid, user2id } = useParams();
 
   const fetchmessages = async (chatID, user2ID) => {
-    setMessages([])
+    setMessages([]);
+    setIsLoading(true);
     await axios({
       method: "POST",
       url: `${process.env.REACT_APP_SERVER_URL}/findchat/${chatID}/${user2ID}`,
@@ -41,10 +46,12 @@ const ChatInfoBox = () => {
       },
     })
       .then((res) => {
-        if(Object.keys(selectedChat).length === 0)(setSelectedChat(res?.data?.Data?.reciever))
-        console.log(res?.data?.Data?.reciever)
+        if (Object.keys(selectedChat).length === 0)
+          setSelectedChat(res?.data?.Data?.reciever);
+        console.log(res?.data?.Data?.reciever);
         setMessages(res?.data?.Data?.chat);
-        socket.emit("join chat" , userid)
+        setIsLoading(false);
+        common_socket.emit("join chat", userid);
       })
       .catch((err) => {
         Toast("Failed to fetch messages");
@@ -52,52 +59,74 @@ const ChatInfoBox = () => {
       });
   };
 
-  useEffect(()=>{
-    console.log("s" + JSON.stringify(selectedChat))
-    socket = io(ENDPOINT);
-    socket.emit("setup" , userData)
-    socket.on("connection" , ()=>{
-      setisSocketConnected(true)
-    })
-  },[])
+  useEffect(() => {
+    setIsLoading(true);
+    common_socket.emit("setup", userData);
+    common_socket.on("connected", () => {
+      setisSocketConnected(true);
+    });
+    common_socket.on("typing", () => {
+      SetIsTyping(true);
+    });
+    common_socket.on("stop typing", () => {
+      SetIsTyping(false);
+    });
+  }, []);
 
   useEffect(() => {
-    socket.on("message received" , (newmessagereceived)=>{
-    //   if(!selectedchatcompare || selectedchatcompare !== newmessagereceived.chat._id){
-    //     //
-    //   }{
-    //     console.log(newmessagereceived)
-        setMessages([...messages , newmessagereceived])
-    //   }
-    })
-  })
-  
+    common_socket.on("message received", (newmessagereceived) => {
+      //   if(!selectedchatcompare || selectedchatcompare !== newmessagereceived.chat._id){
+      //     //
+      //   }{
+      //     console.log(newmessagereceived)
+      setMessages([...messages, newmessagereceived]);
+      //   }
+    });
+  });
 
   useEffect(() => {
     fetchmessages(userid, user2id);
-    selectedchatcompare = userid
+    selectedchatcompare = userid;
   }, [user2id, userid]);
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
+  const propsData = {
+    setmsg: setMessages,
+    msgs: messages,
+    socket: common_socket,
+    typing : typing,
+    isTyping : typing,
+    setTyping : setTyping,
+    setIsTyping : typing ,
+    isSocketConnected : isSocketConnected,
+    roomiId : userid , 
+    isTyping : isTyping,
+    setTypingUser : setTypingUser,
+    typinguser : typinguser,
+    currrentuser : userData?._id
+  };
+
   return (
     <Box maxW="100%">
-      <ChatInfoNavbar selectedChat={selectedChat}/>
-      <Flex
-        color="white"
-        pt="70px"
-        pb="80px"
-        px="1rem"
-        h="100vh"
-        flexDir="column"
-        gap="1rem"
-        overflow="scroll"
-        ref={chatContainerRef}
-      >
+      <ChatInfoNavbar selectedChat={selectedChat} />
+      {!isLoading ? (
+        <Flex
+          color="white"
+          pt="70px"
+          pb="80px"
+          px="1rem"
+          h="100vh"
+          flexDir="column"
+          gap="1rem"
+          overflow="scroll"
+          ref={chatContainerRef}
+        >
           {messages?.map((data) => {
             return (
               <MessageBox
@@ -111,8 +140,32 @@ const ChatInfoBox = () => {
               />
             );
           })}
-      </Flex>
-      <ChatInfoFooter setmsg={setMessages} msgs={messages} socket={socket}/>
+        </Flex>
+      ) : (
+        <Flex
+          color="white"
+          pt="70px"
+          pb="80px"
+          px="1rem"
+          h="100vh"
+          flexDir="column"
+          gap="1rem"
+          overflow="scroll"
+          ref={chatContainerRef}
+          justify={"center"}
+          align={"center"}
+        >
+          <Spinner
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="blue.500"
+            size="xl"
+          />
+        </Flex>
+      )}
+      
+      <ChatInfoFooter propsData={propsData} />
     </Box>
   );
 };
