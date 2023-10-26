@@ -9,6 +9,9 @@ const ContextValue = ({ children }) => {
   const [userData, setUserData] = useState({});
   const [totalChats, setTotalChats] = useState([]);
   const [selectedChat , setSelectedChat] = useState({})
+  const [isIncomingCall, setisIncomingCall] = useState(false)
+  const [incomingCaller, setIncomingCaller] = useState({})
+  const [isScoketConnected , setIsSocketConnected] = useState(false)
   const toast = useToast();
   function Toast(title , status){
     return toast({
@@ -75,7 +78,7 @@ const ContextValue = ({ children }) => {
   },[token])
 
   return (
-    <MyContext.Provider value={{ userData , isUrl , logout , totalChats , getbasicdata , selectedChat , setSelectedChat }}>
+    <MyContext.Provider value={{incomingCaller, setIncomingCaller , userData , isUrl , logout , totalChats , getbasicdata , selectedChat , setSelectedChat , isIncomingCall , setisIncomingCall , isScoketConnected , setIsSocketConnected}}>
       {children}
     </MyContext.Provider>
   );

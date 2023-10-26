@@ -1,15 +1,27 @@
 import { Box, Button, Flex, Img, Text } from "@chakra-ui/react";
 import Profile from "../Assets/Images/profile.jpg";
 import {FaArrowLeftLong} from "react-icons/fa6"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useContext } from "react";
 import { MyContext } from "../context/ContextProvider";
 import {FaVideo} from 'react-icons/fa6'
+import socket from "../socket/Socket"
 
 const ChatInfoNavbar = ({selectedChat}) => {
-  console.log(selectedChat)
-  const { isUrl } = useContext(MyContext);
+  const { isUrl , userData} = useContext(MyContext);
   const navigate = useNavigate()
+
+const videofunc = () => {
+  // const callRequest = userData?._id
+  const callRequest = {
+    id : userData._id,
+    caller : userData.username , 
+    profile : userData.profile
+  }
+  const userIdtoCall = selectedChat?._id
+  socket.emit("call-request" , {userIdtoCall , callRequest})
+}
+
   return (
     <Flex background="gray.800" align="center" p="0rem 1rem" gap="1rem" borderBottom=".1px solid gray" pos="fixed" w={"-webkit-fill-available"} h="57px">
       <Button bg="transparent" colorScheme='transparent' px={0} minW="fit-content" onClick={()=>navigate('/')}><FaArrowLeftLong title="Go back"/></Button>
@@ -19,7 +31,7 @@ const ChatInfoNavbar = ({selectedChat}) => {
       <Text color="white" fontSize="xl">{selectedChat?.username}</Text>
 
       <Box ms="auto" me={5}>
-        <Link to={"/user"}><FaVideo size="20px"/></Link>
+        <Link to={"/user"} onClick={videofunc}><FaVideo size="20px" color="white" title="video call" /></Link>
       </Box>
     </Flex>
   )

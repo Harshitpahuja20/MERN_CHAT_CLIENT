@@ -1,11 +1,57 @@
-import { Box, Grid, GridItem } from "@chakra-ui/react";
-import React from "react";
-import { Outlet } from "react-router-dom";
+import { Box, Grid, GridItem, useToast } from "@chakra-ui/react";
+import React, { useContext , useEffect} from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import AllChat from "../Components/AllChat";
+import CallNotification from "../Components/CallNotification";
+import { MyContext } from "../context/ContextProvider";
+import socket from "../socket/Socket"
 
 const MainComponent = () => {
+  const toast = useToast();
+  const navigate = useNavigate()
+  function Toast(title , status){
+    return toast({
+      description: title,
+      status: status || 'error',
+      duration: 3500,
+      isClosable: true,
+      position : "top-right"
+    })
+  }
+  
+  const {setisIncomingCall , isIncomingCall , setIncomingCaller , userData , isScoketConnected , setIsSocketConnected} = useContext(MyContext)
+
+  useEffect(() => {
+    socket.emit("setup", userData);
+    socket.on("connected", () => {
+      setIsSocketConnected(true);
+    });
+  
+    if (isScoketConnected) {
+      socket.on('incoming-call', ({ callRequest }) => {
+        setIncomingCaller(callRequest)
+        setisIncomingCall(true)
+      });
+  
+      // Add the event listener for "call-disconnected"
+      const handleCallDisconnected = () => {
+        console.log("user disconnected")
+        Toast("User has disconnected the call")
+        navigate("/")
+      };
+  
+      socket.on("call-disconnected", handleCallDisconnected);
+  
+      // Clean up the event listener when the component unmounts
+      return () => {
+        socket.off("call-disconnected", handleCallDisconnected);
+      };
+    }
+  });
+
   return (
-    <Box h="100vh" maxW="100vw">
+    <>
+     <Box h="100vh" maxW="100vw">
       <Grid
         templateAreas={`"nav main main"
                   "nav main main"`}
@@ -28,6 +74,10 @@ const MainComponent = () => {
         </GridItem>
       </Grid> 
     </Box>
+
+    {isIncomingCall && <CallNotification/>}
+    </>
+   
   );
 };
 

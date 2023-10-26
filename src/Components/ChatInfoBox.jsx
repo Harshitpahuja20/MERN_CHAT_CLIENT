@@ -16,7 +16,6 @@ const ChatInfoBox = () => {
   const chatContainerRef = useRef(null);
   const token = localStorage.getItem("chat-token");
   const { userData, selectedChat, setSelectedChat } = useContext(MyContext);
-  const [isSocketConnected, setisSocketConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, SetIsTyping] = useState(false);
@@ -60,11 +59,6 @@ const ChatInfoBox = () => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    common_socket.emit("setup", userData);
-    common_socket.on("connected", () => {
-      setisSocketConnected(true);
-    });
     common_socket.on("typing", () => {
       SetIsTyping(true);
     });
@@ -104,7 +98,6 @@ const ChatInfoBox = () => {
     isTyping : typing,
     setTyping : setTyping,
     setIsTyping : typing ,
-    isSocketConnected : isSocketConnected,
     roomiId : userid , 
     isTyping : isTyping,
     setTypingUser : setTypingUser,
