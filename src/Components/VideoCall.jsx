@@ -1,28 +1,48 @@
 import { Box, Button, Spinner, Text } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { MdCallEnd } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Peer from "simple-peer";
+import { MyContext } from "../context/ContextProvider";
+import socket from "../socket/Socket";
 
 const VideoCall = () => {
   const cameraPreview = useRef();
-  const streamRef = useRef(null); // Keep a reference to the stream.
+  const streamRef = useRef(); // Keep a reference to the stream.
   const [isResponsed, setIsResponsed] = useState();
+  const { userid } = useParams();
   const naviagte = useNavigate();
+  const {
+    caller,
+    selectedChat,
+    userData,
+    incomingCaller,
+    setisIncomingCall,
+    streamm,
+  } = useContext(MyContext);
 
   const darkStyle = {
     filter: "brightness(40%)",
   };
 
+  const peer = new Peer({
+    initiator: true,
+    trickle: false,
+  });
+
   const endCall = () => {
     turncamoff();
-    naviagte(-1)
+    naviagte(-1);
   };
 
   const openCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream; // Store the stream reference.
-      console.log(stream);
+      const stream = await navigator.mediaDevices
+        .getUserMedia({ video: true }).then(stream => {
+          streamRef.current = stream; // Store the stream reference.
+          console.log(stream);
+        })
+        .catch((err) => console.log(err));
 
       if (cameraPreview.current) {
         cameraPreview.current.srcObject = stream;
@@ -32,7 +52,7 @@ const VideoCall = () => {
     }
   };
 
-  const turncamoff = async() => {
+  const turncamoff = async () => {
     if (streamRef.current) {
       const tracks = streamRef.current.getTracks();
 
@@ -41,17 +61,50 @@ const VideoCall = () => {
       });
 
       if (cameraPreview.current) {
-        cameraPreview.current.srcObject = null;
+        cameraPreview.current.srcObject = "";
       }
     }
   };
 
   useEffect(() => {
-    openCamera();
+    if (!caller && !incomingCaller) naviagte("/");
+    if (caller && caller !== null) {
+      openCamera();
+      const userIdtoCall = selectedChat?._id;
+
+      peer.on("signal", (data) => {
+        console.log(data);
+        const callRequest = { ...caller, signal: data };
+        socket.emit("call-request", { userIdtoCall, callRequest });
+      });
+
+      // peer.on("stream", (stream) => {
+      //   console.log("Stream" + stream);
+      // });
+    }
+    else {
+      cameraPreview.current.srcObject = streamm;
+      console.log("streamm" + streamm)
+    }
 
     return () => {
       turncamoff();
     };
+  }, [streamm]);
+
+  useEffect(() => {
+    setisIncomingCall(false);
+    socket.on("call-accepted", (data) => {
+      console.log("data" + JSON.stringify(data));
+      openCamera()
+      if (cameraPreview.current && streamm) {
+          peer.signal(data);
+          cameraPreview.current.srcObject = peer;
+          console.log("peer" + peer)
+      } else {
+        console.log("cameraPreview element is null");
+      }
+    });
   }, []);
 
   return (

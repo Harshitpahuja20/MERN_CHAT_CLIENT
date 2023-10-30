@@ -19,7 +19,7 @@ const MainComponent = () => {
     })
   }
   
-  const {setisIncomingCall , isIncomingCall , setIncomingCaller , userData , isScoketConnected , setIsSocketConnected} = useContext(MyContext)
+  const {setisIncomingCall , isIncomingCall , setIncomingCaller , userData , isScoketConnected , setIsSocketConnected , caller} = useContext(MyContext)
 
   useEffect(() => {
     socket.emit("setup", userData);
@@ -37,7 +37,7 @@ const MainComponent = () => {
       const handleCallDisconnected = () => {
         console.log("user disconnected")
         Toast("User has disconnected the call")
-        navigate("/")
+        navigate("/user/" + caller?.roomId + "/" + caller?.callerid)
       };
   
       socket.on("call-disconnected", handleCallDisconnected);

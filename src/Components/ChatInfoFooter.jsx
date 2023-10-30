@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Flex,
   FormControl,
@@ -10,6 +11,8 @@ import axios from "axios";
 import { useState } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import { useParams } from "react-router-dom";
+import {FaFaceSmile} from "react-icons/fa6"
+import Picker from "emoji-picker-react"
 
 const ChatInfoFooter = ({ propsData }) => {
   const { setmsg, msgs, socket, isSocketConnected, typing,isTyping, setTyping , roomiId , currrentuser , typinguser , setTypingUser} =
@@ -27,6 +30,7 @@ const ChatInfoFooter = ({ propsData }) => {
   const { userid } = useParams();
   const token = localStorage.getItem("chat-token");
   const [newMessage, setNewMessage] = useState("");
+  const [showEmoji, setShowEmoji] = useState(false)
 
   const sendmessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
@@ -77,9 +81,18 @@ const ChatInfoFooter = ({ propsData }) => {
     }, timerLength);
   };
 
+  function onClick(emojiData, event) {
+    setNewMessage(
+      (inputValue) =>
+        inputValue + (emojiData.isCustom ? emojiData.unified : emojiData.emoji)
+    );
+  }
+
+
   return (
     <>
     {isTyping && typinguser !== currrentuser ? <div>Loading...</div> : ""}
+    {showEmoji && <Box className="emoji"><Picker onEmojiClick={onClick}/></Box>}
     
     <Flex
       background="gray.800"
@@ -92,10 +105,12 @@ const ChatInfoFooter = ({ propsData }) => {
       bottom={0}
       h="70px"
     >
+
+<Box ms={"auto"} w="fit-content" className="smile" ><FaFaceSmile size="24px" color="white" cursor="pointer" onClick={()=>setShowEmoji(!showEmoji)}/></Box>
       <Flex
         w="90%"
         boxShadow="1px 1px 4px 2px #0000005e"
-        mx="auto"
+        me="auto"
         align="center"
         borderRadius={8}
       >
@@ -110,7 +125,7 @@ const ChatInfoFooter = ({ propsData }) => {
             onChange={typingmessage}
           />
         </FormControl>
-        <Button bg="transparent" colorScheme="transparent" p={0}>
+        <Button bg="transparent" colorScheme="transparent" p={0} onClick={sendmessage}>
           <BiSolidSend color="white" />
         </Button>
       </Flex>

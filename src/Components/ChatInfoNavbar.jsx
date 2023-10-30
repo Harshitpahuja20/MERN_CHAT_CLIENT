@@ -6,20 +6,20 @@ import { useContext } from "react";
 import { MyContext } from "../context/ContextProvider";
 import {FaVideo} from 'react-icons/fa6'
 import socket from "../socket/Socket"
+import Peer from "simple-peer"
 
 const ChatInfoNavbar = ({selectedChat}) => {
-  const { isUrl , userData} = useContext(MyContext);
+  const { isUrl , userData , isScoketConnected , setCaller} = useContext(MyContext);
   const navigate = useNavigate()
+  const {userid} = useParams()
 
 const videofunc = () => {
-  // const callRequest = userData?._id
-  const callRequest = {
-    id : userData._id,
-    caller : userData.username , 
-    profile : userData.profile
-  }
-  const userIdtoCall = selectedChat?._id
-  socket.emit("call-request" , {userIdtoCall , callRequest})
+  setCaller({
+    callerid : selectedChat._id,
+    caller : selectedChat.username , 
+    profile : selectedChat.profile,
+    roomId : userid
+  })
 }
 
   return (
@@ -31,7 +31,7 @@ const videofunc = () => {
       <Text color="white" fontSize="xl">{selectedChat?.username}</Text>
 
       <Box ms="auto" me={5}>
-        <Link to={"/user"} onClick={videofunc}><FaVideo size="20px" color="white" title="video call" /></Link>
+        {isScoketConnected && <Link to={"/call/" + userid} onClick={videofunc}><FaVideo size="20px" color="white" title="video call" /></Link>}
       </Box>
     </Flex>
   )

@@ -25,7 +25,7 @@ let authRoutes = [
         element: <ChatInfoBox />,
       },
       {
-        path: "/user",
+        path: "/call/:room",
         element: <VideoCall />,
       },
     ],
