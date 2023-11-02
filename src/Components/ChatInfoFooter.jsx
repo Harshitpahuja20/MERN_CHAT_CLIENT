@@ -32,8 +32,8 @@ const ChatInfoFooter = ({ propsData }) => {
   const [newMessage, setNewMessage] = useState("");
   const [showEmoji, setShowEmoji] = useState(false)
 
-  const sendmessage = async (e) => {
-    if (e.key === "Enter" && newMessage) {
+  const senmsg = async() => {
+    if ( newMessage) {
       socket.emit("stop typing")
       setNewMessage("");
       await axios({
@@ -57,6 +57,12 @@ const ChatInfoFooter = ({ propsData }) => {
           Toast(err?.message);
           console.log("err in login" + err?.message);
         });
+    }
+  }
+
+  const sendmessage = async (e) => {
+    if (e.key === "Enter" && newMessage) {
+      senmsg()
     }
   };
   const typingmessage = (e) => {
@@ -125,8 +131,8 @@ const ChatInfoFooter = ({ propsData }) => {
             onChange={typingmessage}
           />
         </FormControl>
-        <Button bg="transparent" colorScheme="transparent" p={0} onClick={sendmessage}>
-          <BiSolidSend color="white" />
+        <Button bg="transparent" colorScheme="transparent" p={0} >
+          <BiSolidSend color="white" onClick={senmsg}/>
         </Button>
       </Flex>
     </Flex>

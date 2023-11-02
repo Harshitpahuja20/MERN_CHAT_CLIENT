@@ -5,6 +5,7 @@ import LoginPage from "../Pages/LoginPage";
 import HomePage from "../Pages/HomePage";
 import ChatInfoBox from "../Components/ChatInfoBox"
 import VideoCall from "../Components/VideoCall";
+import CallingInterface from "../Components/CallingInterface";
 let router;
 
 let authRoutes = [
@@ -24,10 +25,10 @@ let authRoutes = [
         path: "/user/:userid/:user2id",
         element: <ChatInfoBox />,
       },
-      {
-        path: "/call/:room",
-        element: <VideoCall />,
-      },
+      // {
+      //   path: "/call/:room",
+      //   element: <CallingInterface />,
+      // },
     ],
   },
   {
