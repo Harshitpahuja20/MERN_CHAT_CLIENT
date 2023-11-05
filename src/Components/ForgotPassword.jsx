@@ -69,7 +69,6 @@ const ForgotPassword = ({ goback , deta}) => {
 
   const verifyotppass = async (e) => {
     e.preventDefault();
-    console.log(otp.length)
     if (!otp) {Toast("OTP is required");return;}
     if (otp.length > 4 || otp.length < 4) {Toast("OTP must contain only 4 numbers");return;}
     setIsLoading(true)

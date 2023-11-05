@@ -7,7 +7,7 @@ import axios from "axios";
 const ContextValue = ({ children }) => {
   let token;
   const [userData, setUserData] = useState({});
-  const [totalChats, setTotalChats] = useState([]);
+  const [totalChats, setTotalChats] = useState();
   const [selectedChat , setSelectedChat] = useState({})
   const [isIncomingCall, setisIncomingCall] = useState(false)
   const [incomingCaller, setIncomingCaller] = useState(null)
@@ -64,7 +64,6 @@ const ContextValue = ({ children }) => {
     }else{
       Toast(res?.data?.message)
     }
-    console.log(res)
    }).catch((err)=>{
     Toast(err?.message)
     console.log("err in login" + err?.message)

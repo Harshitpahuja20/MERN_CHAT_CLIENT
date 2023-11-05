@@ -15,7 +15,7 @@ var selectedchatcompare;
 const ChatInfoBox = () => {
   const chatContainerRef = useRef(null);
   const token = localStorage.getItem("chat-token");
-  const { userData, selectedChat, setSelectedChat } = useContext(MyContext);
+  const { userData, selectedChat, setSelectedChat , getbasicdata} = useContext(MyContext);
   const [isLoading, setIsLoading] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, SetIsTyping] = useState(false);
@@ -47,7 +47,6 @@ const ChatInfoBox = () => {
       .then((res) => {
         if (Object.keys(selectedChat).length === 0)
           setSelectedChat(res?.data?.Data?.reciever);
-        console.log(res?.data?.Data?.reciever);
         setMessages(res?.data?.Data?.chat);
         setIsLoading(false);
         common_socket.emit("join chat", userid);
@@ -72,8 +71,8 @@ const ChatInfoBox = () => {
       //   if(!selectedchatcompare || selectedchatcompare !== newmessagereceived.chat._id){
       //     //
       //   }{
-      //     console.log(newmessagereceived)
       setMessages([...messages, newmessagereceived]);
+      getbasicdata(token)
       //   }
     });
   });

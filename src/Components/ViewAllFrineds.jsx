@@ -58,7 +58,6 @@ const ViewAllFrineds = ({ closefrienddrawer , isSearch}) => {
     setFilteredData(filteredItems);
   };
   const startChat = async(userId) =>{
-    console.log("object")
    await axios({
     method:"POST",
     url : process.env.REACT_APP_SERVER_URL + "/createchat/" + userId,
@@ -95,7 +94,6 @@ const ViewAllFrineds = ({ closefrienddrawer , isSearch}) => {
         "bearer-token" : localStorage.getItem('chat-token')
       }
     }).then((res)=>{
-      console.log(res.data)
       if(res?.data?.status){
         getfriends()
         Toast(res.data.message , "success")

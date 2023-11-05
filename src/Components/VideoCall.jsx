@@ -38,9 +38,9 @@ const VideoCall = () => {
   const openCamera = async () => {
     try {
       const stream = await navigator.mediaDevices
-        .getUserMedia({ video: true }).then(stream => {
+        .getUserMedia({ video: true })
+        .then((stream) => {
           streamRef.current = stream; // Store the stream reference.
-          console.log(stream);
         })
         .catch((err) => console.log(err));
 
@@ -73,18 +73,15 @@ const VideoCall = () => {
       const userIdtoCall = selectedChat?._id;
 
       peer.on("signal", (data) => {
-        console.log(data);
         const callRequest = { ...caller, signal: data };
         socket.emit("call-request", { userIdtoCall, callRequest });
       });
 
       // peer.on("stream", (stream) => {
-      //   console.log("Stream" + stream);
+
       // });
-    }
-    else {
+    } else {
       cameraPreview.current.srcObject = streamm;
-      console.log("streamm" + streamm)
     }
 
     return () => {
@@ -95,12 +92,10 @@ const VideoCall = () => {
   useEffect(() => {
     setisIncomingCall(false);
     socket.on("call-accepted", (data) => {
-      console.log("data" + JSON.stringify(data));
-      openCamera()
+      openCamera();
       if (cameraPreview.current && streamm) {
-          peer.signal(data);
-          cameraPreview.current.srcObject = peer;
-          console.log("peer" + peer)
+        peer.signal(data);
+        cameraPreview.current.srcObject = peer;
       } else {
         console.log("cameraPreview element is null");
       }

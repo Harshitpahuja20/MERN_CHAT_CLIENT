@@ -35,7 +35,6 @@ const MainComponent = () => {
   
       // Add the event listener for "call-disconnected"
       const handleCallDisconnected = () => {
-        console.log("user disconnected")
         Toast("User has disconnected the call")
         navigate("/user/" + caller?.roomId + "/" + caller?.callerid)
       };

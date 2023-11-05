@@ -123,7 +123,6 @@ const LoginComp = () => {
   const googlelogin = useGoogleLogin({
     onSuccess: tokenResponse => {
      axios.get("https://www.googleapis.com/oauth2/v1/userinfo?access_token=" + tokenResponse?.access_token).then(async(res) =>{
-     console.log(res)
       await axios({
         method : "POST",
         url : `${process.env.REACT_APP_SERVER_URL}/socialSignup`,

@@ -37,11 +37,9 @@ function ProfileDrawer({ isopen, isclose }) {
   const btnRef = useRef();
   const onchange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
-    console.log(data);
   };
 
   const handleSubmit = async (e) => {
-    console.log("object");
     e.preventDefault();
     if (!username || username.length < 3) {Toast("Username must contain 3 letters"); return}
     const formData = new FormData();
@@ -82,7 +80,6 @@ function ProfileDrawer({ isopen, isclose }) {
         document.querySelector(".img").src = reader.result;
       });
     }
-    console.log(data);
   };
 
   return (

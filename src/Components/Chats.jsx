@@ -14,13 +14,15 @@ const Chats = ({
   const { totalChats } = useContext(MyContext);
   const [filter, setFilter] = useState("");
   const [filteredData, setFilteredData] = useState(totalChats);
-  const [loader, setLoader] = useState(totalChats);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     setLoader(true)
+    console.log(loader)
     setFilteredData(totalChats);
-    if(totalChats.length !== 0){
+    if(totalChats){
       setLoader(false)
+    console.log(loader)
     }
   }, [totalChats]);
 

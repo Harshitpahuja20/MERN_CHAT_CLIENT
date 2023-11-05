@@ -46,7 +46,6 @@ function CallNotification() {
   
     // Handle signal
     peer.on("signal", (data) => {
-      console.log(data);
       socket.emit("answer-call", {
         signal: data,
         to: incomingCaller?.callerid,
@@ -55,7 +54,6 @@ function CallNotification() {
   
     // Handle potential peer destruction
     peer.on("close", () => {
-      console.log("Peer destroyed");
       // Handle any cleanup or UI updates here if needed
     });
   

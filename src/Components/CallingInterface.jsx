@@ -17,7 +17,6 @@ const CallingInterface = () => {
       await navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((stream) => {
-          console.log(stream)
           setStream(stream);
           const peer = new Peer({
             initiator: true,
@@ -27,7 +26,6 @@ const CallingInterface = () => {
           const userIdtoCall = selectedChat?._id;
     
           peer.on("signal", (data) => {
-            console.log(data);
             const callRequest = { ...caller, signal: data };
             socket.emit("call-request", { userIdtoCall, callRequest });
           });

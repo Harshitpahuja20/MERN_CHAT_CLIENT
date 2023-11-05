@@ -4,20 +4,21 @@ import {
   Flex,
   FormControl,
   Input,
-  Text,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import {FaFaceSmile} from "react-icons/fa6"
 import Picker from "emoji-picker-react"
+import { MyContext } from "../context/ContextProvider";
 
 const ChatInfoFooter = ({ propsData }) => {
   const { setmsg, msgs, socket, isSocketConnected, typing,isTyping, setTyping , roomiId , currrentuser , typinguser , setTypingUser} =
     propsData;
   const toast = useToast();
+  const {getbasicdata} = useContext(MyContext)
   function Toast(title, status) {
     return toast({
       description: title,
@@ -51,7 +52,7 @@ const ChatInfoFooter = ({ propsData }) => {
         .then((res) => {
           socket.emit("new message", res.data.Data);
           setmsg([...msgs, res.data.Data]);
-          console.log(msgs);
+          getbasicdata(token)
         })
         .catch((err) => {
           Toast(err?.message);

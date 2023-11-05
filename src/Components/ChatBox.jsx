@@ -9,7 +9,6 @@ const ChatBox = ({ data, bg }) => {
   const setchatdetails = () => {
     setSelectedChat(data?.reciever);
   };
-  console.log(data);
   return (
     <Link
       to={`/user/` + data?._id + "/" + data?.reciever?._id}
@@ -58,7 +57,7 @@ const ChatBox = ({ data, bg }) => {
           w="100%"
         >
           <Text>{data?.reciever?.email}</Text>
-          <Text fontSize="smaller">{data?.lastmessage}</Text>
+          <Text fontSize="smaller">{data?.lastmessage || "No Message Yet"}</Text>
         </Flex>
       </Flex>
     </Link>
