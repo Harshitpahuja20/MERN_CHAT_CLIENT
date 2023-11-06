@@ -157,7 +157,7 @@ function ProfileDrawer({ isopen, isclose }) {
                 />
               </Box>
               <Box>
-                <Button w="100%" onClick={handleSubmit} isDisabled={username === userData?.username && status === userData?.status}>
+                <Button w="100%" onClick={handleSubmit} isDisabled={username === userData?.username && status === userData?.status && profile === userData?.profile}>
                   Update
                 </Button>
               </Box>
