@@ -47,7 +47,7 @@ const ContextValue = ({ children }) => {
     }
   }
  async function getbasicdata(token){
-  setLoader(true)
+ if(!userData){ setLoader(true)}
     await axios({
       method : "POST",
       url : `${process.env.REACT_APP_SERVER_URL}/getloginuserdetails`,
