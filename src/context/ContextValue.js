@@ -14,6 +14,7 @@ const ContextValue = ({ children }) => {
   const [streamm , setStreamm] = useState()
   const [isScoketConnected , setIsSocketConnected] = useState(false)
   const [caller , setCaller] = useState(null)
+  const [loader, setLoader] = useState(false);
   const toast = useToast();
   function Toast(title , status){
     return toast({
@@ -46,6 +47,7 @@ const ContextValue = ({ children }) => {
     }
   }
  async function getbasicdata(token){
+  setLoader(true)
     await axios({
       method : "POST",
       url : `${process.env.REACT_APP_SERVER_URL}/getloginuserdetails`,
@@ -54,6 +56,7 @@ const ContextValue = ({ children }) => {
           "bearer-token" : token
       },
    }).then((res)=>{
+    setLoader(false)
     if(res?.data?.status){
       const user = res.data.Data.user
       localStorage.setItem("user-data" , JSON.stringify({
@@ -79,7 +82,7 @@ const ContextValue = ({ children }) => {
   },[token])
 
   return (
-    <MyContext.Provider value={{incomingCaller, setIncomingCaller , userData , isUrl , logout , totalChats , getbasicdata , selectedChat , setSelectedChat , isIncomingCall , setisIncomingCall , isScoketConnected , setIsSocketConnected , caller , setCaller , streamm , setStreamm}}>
+    <MyContext.Provider value={{incomingCaller, setIncomingCaller , userData , isUrl , logout , totalChats , getbasicdata , selectedChat , setSelectedChat , isIncomingCall , setisIncomingCall , isScoketConnected , setIsSocketConnected , caller , setCaller , streamm , setStreamm , loader}}>
       {children}
     </MyContext.Provider>
   );
